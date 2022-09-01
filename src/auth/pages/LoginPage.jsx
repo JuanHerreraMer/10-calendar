@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import Swal from 'sweetalert2';
+import toast, { Toaster } from 'react-hot-toast';
 import { useAuthStore } from '../../hooks/useAuthStore';
 import { useForm } from '../../hooks/useForm';
 import './LoginPage.css';
@@ -18,7 +19,7 @@ const registerFormFields = {
 
 export const LoginPage = () => {
 
-    const { startLogin, errorMessage } = useAuthStore();
+    const { startLogin, startRegister, errorMessage } = useAuthStore();
 
     const {loginEmail, loginPassword, onInputChange: onLoginInputChange } = useForm(loginFormFields);
     const {registerName, registerEmail, registerPassword, registerPassword2, onInputChange: onRegisterInputChange } = useForm(registerFormFields);
@@ -31,18 +32,25 @@ export const LoginPage = () => {
 
     const registerSubmit = (e) => {
         e.preventDefault();
-        console.log({ registerName, registerEmail, registerPassword, registerPassword2 })
+
+        if( registerPassword !== registerPassword2 ){
+            Swal.fire('Error en registro', 'Contraseñas no son iguales', 'error');
+            return;
+        }
+        startRegister({ name: registerName, email: registerEmail, password: registerPassword });
     }
 
     useEffect(() => {
       if( errorMessage !== undefined){
         Swal.fire('Error en la autenticación', errorMessage, 'error');
+        // toast.error(errorMessage);
       }
     }, [ errorMessage ])
     
 
     return (
         <div className="container login-container">
+            <div><Toaster/></div>
             <div className="row">
                 <div className="col-md-6 login-form-1">
                     <h3>Ingreso</h3>
